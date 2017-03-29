@@ -30,11 +30,46 @@ class ViewController2: UIViewController {
     var categorias: [Categoria] = []
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tableView.tableFooterView = UIView()
         showLoadingView()
-        pedirCatalogo()
-        self.tableView.dataSource = self
-        self.tableView.delegate = self
-                // Do any additional setup after loading the view.
+        pedirCatalogo {
+            self.tableView.dataSource = self
+            self.tableView.delegate = self
+            self.tableView.addSubview(self.refreshControl)
+        }
+        
+    }
+    
+    
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        
+        refreshControl.addTarget(self, action: #selector(ViewController2.refreshData), for: UIControlEvents.valueChanged)
+        
+        return refreshControl
+    }()
+    
+    func refreshData() {
+        // 1
+        /*
+        self.pedirCatalogo(completion: { () -> Void in
+            self.tableView.reloadData()
+            self.refreshControl.endRefreshing()
+        })
+         */
+        
+        // 2
+        /*
+        self.pedirCatalogo(completion: {
+            self.tableView.reloadData()
+            self.refreshControl.endRefreshing()
+        })
+        */
+        
+        self.pedirCatalogo {
+            self.tableView.reloadData()
+            self.refreshControl.endRefreshing()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -120,14 +155,14 @@ private extension ViewController2 {
         self.categorias.append(cat)
         cat = Categoria(nombre: "Cruces de Parafarmácia", imagen: #imageLiteral(resourceName: "parafarmacia"))
         self.categorias.append(cat)
-        cat = Categoria(nombre: "Clínicas Dental", imagen: #imageLiteral(resourceName: "clinicadental"))
+        cat = Categoria(nombre: "Clínica Dental", imagen: #imageLiteral(resourceName: "clinicadental"))
         self.categorias.append(cat)
         cat = Categoria(nombre: "Cruces de Centro Médico", imagen: #imageLiteral(resourceName: "medicocorazon"))
         self.categorias.append(cat)
         
         self.tableView.reloadData()
     }
-    func pedirCatalogo(){
+    func pedirCatalogo(completion: @escaping () -> Void){
         let url = URL(string: "https://demo8112147.mockable.io")
         URLSession.shared.dataTask(with: url!, completionHandler: {
             (data, response, error) in
@@ -178,6 +213,7 @@ private extension ViewController2 {
                     }
                     OperationQueue.main.addOperation({
                         //print(json["products"])
+                        completion()
                     })
                     
                 }catch let error as NSError{

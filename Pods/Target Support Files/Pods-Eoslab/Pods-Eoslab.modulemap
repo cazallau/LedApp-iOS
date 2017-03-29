@@ -1,0 +1,6 @@
+framework module Pods_Eoslab {
+  umbrella header "Pods-Eoslab-umbrella.h"
+
+  export *
+  module * { export * }
+}

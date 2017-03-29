@@ -7,3 +7,13 @@
 //
 
 import Foundation
+import UIKit
+class Categoria: NSObject {
+    var nombre :String?
+    var imagen : UIImage?
+    
+    init(nombre: String, imagen: UIImage) {
+        self.nombre = nombre
+        self.imagen = imagen
+    }
+}
